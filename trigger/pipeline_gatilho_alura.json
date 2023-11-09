@@ -1,0 +1,24 @@
+{
+	"name": "pipeline_gatilho_alura",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "datalake-ingestao",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2023-11-09T14:08:00",
+				"timeZone": "E. South America Standard Time"
+			}
+		}
+	}
+}
