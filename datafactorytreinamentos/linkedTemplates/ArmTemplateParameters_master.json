@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "datafactorytreinamentos"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"SqlServer1_connectionString": {
+			"value": ""
+		},
+		"databricks_datafactory_link_accessToken": {
+			"value": ""
+		},
+		"databricks_datafactory_link_properties_typeProperties_existingClusterId": {
+			"value": "1108-150632-rq6mvqm0"
+		},
+		"trigger1_gatilhoarmazenamento_properties_typeProperties_scope": {
+			"value": "/subscriptions/cc7abdda-4465-4d4e-8bd9-d502256c66df/resourceGroups/GP_Treinamentos/providers/Microsoft.Storage/storageAccounts/storegetreinamentos"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
