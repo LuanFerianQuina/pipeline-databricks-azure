@@ -1,0 +1,96 @@
+{
+	"name": "Carga_tabelaProduto",
+	"properties": {
+		"description": "Carga_tabelaProduto",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dataset_vendas_modificado",
+						"type": "DatasetReference"
+					},
+					"name": "DatasetVendas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "SaidaCargaProduto"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1",
+					"description": "Selecionando somente as tabelas que iremos inserir no banco de dados. "
+				},
+				{
+					"name": "distinct",
+					"description": "Retirando os dados duplicados"
+				},
+				{
+					"name": "select2",
+					"description": "Selecionando as colunas para o dataset"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_cliente as string,",
+				"          nom_cliente as string,",
+				"          cod_vendedor as string,",
+				"          nom_vendedor as string,",
+				"          cod_cidade as string,",
+				"          nom_cidade as string,",
+				"          cod_produto as string,",
+				"          Nom_produto as string,",
+				"          cod_marca as string,",
+				"          Nom_marca as string,",
+				"          cod_departamento as string,",
+				"          nom_departamento as string,",
+				"          cod_gerencia as string,",
+				"          nom_gerencia as string,",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string,",
+				"          num_nota as string,",
+				"          Latitude as string,",
+				"          Longitude as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DatasetVendas",
+				"DatasetVendas select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(cod_produto,",
+				"          Nom_produto,",
+				"          nom_departamento),",
+				"     idprodutoadd = first(cod_produto)) ~> distinct",
+				"distinct select(mapColumn(",
+				"          cod_produto,",
+				"          Nom_produto,",
+				"          nom_departamento",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['CargaSaidaProduto.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          idproduto = cod_produto,",
+				"          nomeproduto = Nom_produto,",
+				"          nomecategoria = nom_departamento",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> SaidaCargaProduto"
+			]
+		}
+	}
+}

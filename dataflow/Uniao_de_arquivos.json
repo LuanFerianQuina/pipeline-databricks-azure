@@ -1,0 +1,72 @@
+{
+	"name": "Uniao_de_arquivos",
+	"properties": {
+		"description": "Iremos unir dois arquivos com a mesma quantidade de colunas. ",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ArquivoVendaAnoMax",
+						"type": "DatasetReference"
+					},
+					"name": "Arquivo01"
+				},
+				{
+					"dataset": {
+						"referenceName": "ArquivoVendaAnoMax",
+						"type": "DatasetReference"
+					},
+					"name": "Arquivo02"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "Arquivofinaldeuniao",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Ano_venda as short,",
+				"          {M�s_venda} as short,",
+				"          Valor_mes_ano as double,",
+				"          RanKTopVendas as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['/ArquivoVendaAnoMax.csv']) ~> Arquivo01",
+				"source(output(",
+				"          Ano_venda as short,",
+				"          {M�s_venda} as short,",
+				"          Valor_mes_ano as double,",
+				"          RanKTopVendas as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['/ArquivoVendaAnoMax.csv']) ~> Arquivo02",
+				"Arquivo01, Arquivo02 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Uniao_de_arquivos.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Arquivofinaldeuniao"
+			]
+		}
+	}
+}

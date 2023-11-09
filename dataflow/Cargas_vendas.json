@@ -1,0 +1,114 @@
+{
+	"name": "Cargas_vendas",
+	"properties": {
+		"description": "Carga do dataset de vendas. ",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "VendasSemClientes",
+						"type": "DatasetReference"
+					},
+					"name": "VendasSemClientes",
+					"description": "Carga do dataset de vendas sem clientes"
+				},
+				{
+					"dataset": {
+						"referenceName": "VendasCliente",
+						"type": "DatasetReference"
+					},
+					"name": "VendasClientes",
+					"description": "Carga do dataset de vendas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "GerandoArquivoFinal",
+					"description": "Gerando o arquivo que fizemos os joins."
+				}
+			],
+			"transformations": [
+				{
+					"name": "Select",
+					"description": "Selecionar as colunas que precisamos da tabela de vendas sem clientes. "
+				},
+				{
+					"name": "JoinDataset"
+				},
+				{
+					"name": "Renomeandocolunas"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_vendedor as string,",
+				"          nom_vendedor as string,",
+				"          cod_produto as string,",
+				"          Nom_produto as string,",
+				"          cod_marca as string,",
+				"          Nom_marca as string,",
+				"          cod_departamento as string,",
+				"          nom_departamento as string,",
+				"          cod_gerencia as string,",
+				"          nom_gerencia as string,",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string,",
+				"          num_nota as string,",
+				"          Latitude as string,",
+				"          Longitude as string,",
+				"          nom_cidade as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> VendasSemClientes",
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_cliente as string,",
+				"          cod_cidade as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> VendasClientes",
+				"VendasSemClientes select(mapColumn(",
+				"          id_venda,",
+				"          cod_produto,",
+				"          nom_departamento,",
+				"          qtd_venda,",
+				"          val_venda",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Select",
+				"Select, VendasClientes join(Select@id_venda == VendasClientes@id_venda,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinDataset",
+				"JoinDataset select(mapColumn(",
+				"          idvenda = Select@id_venda,",
+				"          idproduto = cod_produto,",
+				"          quantidade = qtd_venda,",
+				"          valototal = val_venda,",
+				"          idcliente = cod_cliente",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Renomeandocolunas",
+				"Renomeandocolunas sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['CargasVendas.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> GerandoArquivoFinal"
+			]
+		}
+	}
+}

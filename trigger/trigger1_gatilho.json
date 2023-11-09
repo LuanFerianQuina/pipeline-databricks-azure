@@ -1,0 +1,26 @@
+{
+	"name": "trigger1_gatilho",
+	"properties": {
+		"description": "Gatilho para disparar uma pipeline, podemos agendar por minutos, ou podemos parametrizar para ser disparada após outra execução. ",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Carga_tabelaProduto",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2023-10-31T23:03:00Z",
+				"endTime": "2023-11-01T23:03:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

@@ -1,0 +1,91 @@
+{
+	"name": "Carga_tabelaCliente",
+	"properties": {
+		"description": "Carga da tabela cliente no banco de dados, trazendo informações da base de vendas. ",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dataset_vendas_modificado",
+						"type": "DatasetReference"
+					},
+					"name": "DatasetVendas",
+					"description": "Importar os dados da base de vendas em Excel para a tabela de vendas. "
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "SaidaCargaCliente"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "TransformarNomedoCliente"
+				},
+				{
+					"name": "distinct",
+					"description": "ELIMINAR registros duplicados dependendo de TODOS os campos listados no respectivo SELECT -  Na função first serviu para trazer apenas um ID do cliente sem ser repetido."
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_cliente as string,",
+				"          nom_cliente as string,",
+				"          cod_vendedor as string,",
+				"          nom_vendedor as string,",
+				"          cod_cidade as string,",
+				"          nom_cidade as string,",
+				"          cod_produto as string,",
+				"          Nom_produto as string,",
+				"          cod_marca as string,",
+				"          Nom_marca as string,",
+				"          cod_departamento as string,",
+				"          nom_departamento as string,",
+				"          cod_gerencia as string,",
+				"          nom_gerencia as string,",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string,",
+				"          num_nota as string,",
+				"          Latitude as string,",
+				"          Longitude as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DatasetVendas",
+				"DatasetVendas select(mapColumn(",
+				"          idcliente = cod_cliente,",
+				"          nomecliente = nom_cliente",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(nomecliente = upper(nomecliente)) ~> TransformarNomedoCliente",
+				"TransformarNomedoCliente aggregate(groupBy(idcliente,",
+				"          nomecliente),",
+				"     Idclienteadd = first(idcliente)) ~> distinct",
+				"distinct sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['CargaSaidaCliente.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          idcliente,",
+				"          nomecliente",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> SaidaCargaCliente"
+			]
+		}
+	}
+}

@@ -1,0 +1,68 @@
+{
+	"name": "Uniao_de_Arquivos",
+	"properties": {
+		"description": "União de dois arquivos com a quantidade de colunas idênticas. ",
+		"activities": [
+			{
+				"name": "Arquivo01",
+				"description": "Primeiro arquivo para união",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Uniao_de_arquivos",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Arquivo02",
+				"description": "Segundo arquivo para unificar",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Arquivo01",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Uniao_de_arquivos",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-28T00:45:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

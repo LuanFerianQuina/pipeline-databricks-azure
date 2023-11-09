@@ -1,0 +1,115 @@
+{
+	"name": "JoinJuncao",
+	"properties": {
+		"description": "Aqui iremos fazer um Join para trazer dados de outro dataset e depois fazer uma seleção com as colunas que precisamos para o novo dataframe.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Vendas",
+						"type": "DatasetReference"
+					},
+					"name": "ArquivoVendasMod"
+				},
+				{
+					"dataset": {
+						"referenceName": "Dataset_vendas",
+						"type": "DatasetReference"
+					},
+					"name": "ArquivoVendas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "ArquivoFinalJoin"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ArquivoVendasMod",
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_cliente as string,",
+				"          nom_cliente as string,",
+				"          cod_vendedor as string,",
+				"          nom_vendedor as string,",
+				"          cod_cidade as string,",
+				"          nom_cidade as string,",
+				"          cod_produto as string,",
+				"          Nom_produto as string,",
+				"          cod_marca as string,",
+				"          Nom_marca as string,",
+				"          cod_departamento as string,",
+				"          nom_departamento as string,",
+				"          cod_gerencia as string,",
+				"          nom_gerencia as string,",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string,",
+				"          num_nota as string,",
+				"          Latitude as string,",
+				"          Longitude as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ArquivoVendas",
+				"ArquivoVendasMod, ArquivoVendas join(ArquivoVendasMod@Ano_venda == ArquivoVendas@Ano_venda,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          Ano_venda = ArquivoVendasMod@Ano_venda,",
+				"          {M�s_venda} = ArquivoVendasMod@{M�s_venda},",
+				"          Dia_venda = ArquivoVendasMod@Dia_venda,",
+				"          qtd_venda = ArquivoVendasMod@qtd_venda,",
+				"          val_venda = ArquivoVendasMod@val_venda,",
+				"          id_venda,",
+				"          cod_cliente,",
+				"          nom_cliente,",
+				"          cod_vendedor,",
+				"          nom_vendedor,",
+				"          cod_cidade,",
+				"          nom_cidade,",
+				"          Ano_venda = ArquivoVendas@Ano_venda,",
+				"          {M�s_venda} = ArquivoVendas@{M�s_venda},",
+				"          qtd_venda = ArquivoVendas@qtd_venda,",
+				"          val_venda = ArquivoVendas@val_venda",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['JOINarquivovendas.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ArquivoFinalJoin"
+			]
+		}
+	}
+}

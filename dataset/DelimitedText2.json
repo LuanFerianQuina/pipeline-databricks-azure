@@ -1,0 +1,53 @@
+{
+	"name": "DelimitedText2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "CargaCidade.csv",
+				"container": "fontes"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id_venda",
+				"type": "String"
+			},
+			{
+				"name": "Ano_venda",
+				"type": "String"
+			},
+			{
+				"name": "M�s_venda",
+				"type": "String"
+			},
+			{
+				"name": "val_venda",
+				"type": "String"
+			},
+			{
+				"name": "nom_cidade",
+				"type": "String"
+			},
+			{
+				"name": "cod_cliente",
+				"type": "String"
+			},
+			{
+				"name": "cod_cidade",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

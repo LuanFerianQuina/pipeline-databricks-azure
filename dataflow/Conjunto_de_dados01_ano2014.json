@@ -1,0 +1,69 @@
+{
+	"name": "Conjunto_de_dados01_ano2014",
+	"properties": {
+		"description": "Separar o conjunto de dados 01...Criar uma divisão com se fosse um If, se for 2014 senao, se for demais ....Pode separar por mais anos se quiser. ",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "Conjuntodedados01Ano2014"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "ArquivofinalseparadorAno2014"
+				},
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "ArquivofinalseparadorAno2015"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Divisaodearquivo"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Ano_venda as short,",
+				"          {M�s_venda} as short,",
+				"          Valor_mes_ano as double,",
+				"          RanKTopVendas as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['/Uniao_de_arquivos.csv']) ~> Conjuntodedados01Ano2014",
+				"Conjuntodedados01Ano2014 split(Ano_venda==2014,",
+				"     disjoint: false) ~> Divisaodearquivo@(Regra2014, Demais)",
+				"Divisaodearquivo@Regra2014 filter(Valor_mes_ano <264703) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Vendas2014.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ArquivofinalseparadorAno2014",
+				"Divisaodearquivo@Demais sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Vendas2015.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ArquivofinalseparadorAno2015"
+			]
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+	"name": "Tb_Clientes",
+	"properties": {
+		"description": "O datafactory trouxe a tabela_clientes para dentro do conjunto de dados, através do bando sql.",
+		"linkedServiceName": {
+			"referenceName": "SqlServer1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "idcliente",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nomecliente",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "cliente"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,36 @@
+{
+	"name": "JoinTabelasVendasCargo",
+	"properties": {
+		"description": "Tabelas vendas e cargo.",
+		"activities": [
+			{
+				"name": "Clientes",
+				"description": "Dataset Clientes",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "JoinClientesVendas",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-30T14:17:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

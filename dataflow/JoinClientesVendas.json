@@ -1,0 +1,105 @@
+{
+	"name": "JoinClientesVendas",
+	"properties": {
+		"description": "Joint entre as tabelas de clientes_cargo e vendas. ",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ClienteCargo",
+						"type": "DatasetReference"
+					},
+					"name": "JoinClientescargo"
+				},
+				{
+					"dataset": {
+						"referenceName": "Dataset_vendas_modificado",
+						"type": "DatasetReference"
+					},
+					"name": "BaseVendas",
+					"description": "Base vendas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					},
+					"name": "VendasClientesCargo",
+					"description": "Gerando um dataframe"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "SelecionarColunasDataframe"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          idcliente as string,",
+				"          idcargo as string,",
+				"          nomecargo as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> JoinClientescargo",
+				"source(output(",
+				"          id_venda as string,",
+				"          cod_cliente as string,",
+				"          nom_cliente as string,",
+				"          cod_vendedor as string,",
+				"          nom_vendedor as string,",
+				"          cod_cidade as string,",
+				"          nom_cidade as string,",
+				"          cod_produto as string,",
+				"          Nom_produto as string,",
+				"          cod_marca as string,",
+				"          Nom_marca as string,",
+				"          cod_departamento as string,",
+				"          nom_departamento as string,",
+				"          cod_gerencia as string,",
+				"          nom_gerencia as string,",
+				"          Ano_venda as string,",
+				"          {M�s_venda} as string,",
+				"          Dia_venda as string,",
+				"          dtc_venda as string,",
+				"          qtd_venda as string,",
+				"          val_venda as string,",
+				"          num_nota as string,",
+				"          Latitude as string,",
+				"          Longitude as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> BaseVendas",
+				"BaseVendas, JoinClientescargo join(cod_cliente == idcliente,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          nom_cliente,",
+				"          Nom_produto,",
+				"          Nom_marca,",
+				"          {M�s_venda},",
+				"          idcliente,",
+				"          idcargo,",
+				"          nomecargo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelecionarColunasDataframe",
+				"SelecionarColunasDataframe sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ClientesVendasCargo.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> VendasClientesCargo"
+			]
+		}
+	}
+}

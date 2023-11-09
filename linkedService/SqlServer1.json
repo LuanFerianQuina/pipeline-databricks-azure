@@ -1,0 +1,13 @@
+{
+	"name": "SqlServer1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Associar um datafactory a um banco de dados que nesse caso será o SQL, mas pode ser um Oracle, entre outros. Vamos conectar para trazer o dataset.",
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=serverdados01.database.windows.net;initial catalog=bd_gp_treinamentos;user id=Admin_Luan",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDNCNDAyRTM1LTdEMkItNEM4OC1BRTlCLUVEREU5NjI5NTg5NF82ODcyOTc4MS03NDhhLTRlN2YtYWJjYy02NzBjM2QxZjEyMzMiDQp9"
+		}
+	}
+}

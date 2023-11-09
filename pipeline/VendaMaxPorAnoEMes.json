@@ -1,0 +1,36 @@
+{
+	"name": "VendaMaxPorAnoEMes",
+	"properties": {
+		"description": "Criando um fluxo para geração de um arquivo de vendas com máximo por ano, mês e rank.",
+		"activities": [
+			{
+				"name": "VendaMaxPorAnoEMes",
+				"description": "Vamos criar um fluxo para separar um dataframe por venda total no ano, mes e classificar o maior valor para o menor. ",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "ArquivoVendaAnoMax",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-27T16:11:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

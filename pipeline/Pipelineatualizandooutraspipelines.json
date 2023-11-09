@@ -1,0 +1,75 @@
+{
+	"name": "Pipelineatualizandooutraspipelines",
+	"properties": {
+		"description": "Pipeline que atualiza outras pipelines e, podemos juntar também fluxo de dados.",
+		"activities": [
+			{
+				"name": "Executar a Pipeline Total de vendas",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Totaldevendas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Totaldevendas",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Executar a Pipeline Total de vendas",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Totaldevendas",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Transformacao-de-dados",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Totaldevendas",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transformacao-de-dados",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-30T15:31:54Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

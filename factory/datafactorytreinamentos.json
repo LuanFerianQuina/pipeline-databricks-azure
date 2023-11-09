@@ -1,0 +1,9 @@
+{
+	"name": "datafactorytreinamentos",
+	"location": "brazilsouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "6ad89d67-f8e4-4c89-a880-643f86701d83",
+		"tenantId": "01ceea99-2591-4055-9283-44387adb686b"
+	}
+}

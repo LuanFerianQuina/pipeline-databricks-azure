@@ -1,0 +1,165 @@
+{
+	"name": "Carga_Dataset_vendas",
+	"properties": {
+		"description": "Carga do dataset de vendas",
+		"activities": [
+			{
+				"name": "Carga_vendas",
+				"description": "Carga do dataset de vendas",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Cargas_vendas",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CarregarNoBancodeDados",
+				"description": "Fazer a carga de vendas no banco de dados",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Carga_vendas",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "CargasVendas.csv*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"idvenda"
+							]
+						},
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "idvenda",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "idvenda",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "idcliente",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "idcliente",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "idproduto",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "idproduto",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "quantidade",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "quantidade",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "valototal",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "valor_total",
+									"type": "Double",
+									"physicalType": "float"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Dir_blob",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Tb_vendas",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-10-31T20:48:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
